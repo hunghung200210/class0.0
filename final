@@ -1,1 +1,72 @@
+import re
+import long_responses as long
 
+
+print('此ChatBot用來搜尋最適合的肥料\n搜尋農作物或水果能找出最佳的肥料比例以及肥料的網址\n')
+
+def message_probability(user_message, recognised_words, single_response=False, required_words=[]):
+    message_certainty = 0
+    has_required_words = True
+
+    # Counts how many words are present in each predefined message
+    for word in user_message:
+        if word in recognised_words:
+            message_certainty += 1
+
+    # Calculates the percent of recognised words in a user message
+    percentage = float(message_certainty) / float(len(recognised_words))
+
+    # Checks that the required words are in the string
+    for word in required_words:
+        if word not in user_message:
+            has_required_words = False
+            break
+
+    # Must either have the required words, or be a single response
+    if has_required_words or single_response:
+        return int(percentage * 100)
+    else:
+        return 0
+
+    
+def check_all_messages(message):
+    highest_prob_list = {}
+
+    # Simplifies response creation / adds it to the dict
+    def response(bot_response, list_of_words, single_response=False, required_words=[]):
+        nonlocal highest_prob_list
+        highest_prob_list[bot_response] = message_probability(message, list_of_words, single_response, required_words)
+
+    # Responses -------------------------------------------------------------------------------------------------------
+    
+    response('\n(一)三要素推荐量(公斤/公頃)\n氮素： 140-160。磷酐： 80-100。氧化鉀： 110-130。\n(二)堆肥推荐量\n10-15 公噸/公頃，有機質肥料成分較高時，應降低施用量30-50％。\n適合的肥料:39號複肥500公斤(含氮及氧化 鉀各60公斤、磷酐90公斤)\n肥料詳細網址:https://www.taifer.com.tw/ProductDetailC003210.aspx?Cond=25cc13e9-d36b-4061-aa93-8252e160bae6\n', ['蘿蔔','羅波'], single_response=True)
+    response('\n( 一 ) 三要素推薦量 ( 公斤 / 公頃 ) \n氮素： 180-250 。磷酐： 120-180 。氧化鉀： 120-180 。\n ( 二 ) 堆肥推薦量\n 10-15 公噸 / 公頃，有機質肥料成分較高時，應降低施用量 30-50 ％。\n 適合的肥料:39 號複肥 800 公斤 ( 含氮及氧化鉀各 96 公斤、磷酐 144 公斤 )\n肥料詳細網址:https://www.taifer.com.tw/ProductDetailC003210.aspx?Cond=25cc13e9-d36b-4061-aa93-8252e160bae6\n', ['胡蘿蔔','紅蘿蔔','湖羅波'], single_response=True)
+    response('\n( 一 ) 三要素推薦量 ( 公斤 / 公頃 ) \n氮素： 150-180 。磷酐： 90-120 。氧化鉀： 120-150 。\n ( 二 ) 堆肥推薦量 \n15-20 公噸 / 公頃，有機質肥料成分較高時，應降低施用量 30-50 ％。\n 適合的肥料: 39 號複肥 500 公斤 ( 含氮 60 公斤、磷酐 90 公斤、氧化鉀 60 公斤 ) \n肥料詳細網址:https://www.taifer.com.tw/ProductDetailC003210.aspx?Cond=25cc13e9-d36b-4061-aa93-8252e160bae6\n', ['菠菜'], single_response=True)
+    response('\n( 一 ) 三要素推薦量 ( 公斤 / 公頃 ) \n氮素：秋冬作 250-350 ，夏作 200-300 。磷酐： 70-90 。 氧化鉀： 120-180 。\n ( 二 ) 堆肥推薦量\n 10 公噸 / 公頃，有機質肥料成分較高時，應降低施用量 30-50 ％。\n  適合的肥料:39 號複肥 400 公斤\n肥料詳細網址:https://www.taifer.com.tw/ProductDetailC003210.aspx?Cond=25cc13e9-d36b-4061-aa93-8252e160bae6\n', ['甘藍','高麗菜','包心菜'], single_response=True)
+    response('\n( 一 ) 三要素推荐量 ( 公斤 / 公頃 ) \n氮素： 95-115 。磷酐： 90-105 。氧化鉀： 130-170 。\n ( 二 ) 堆肥推荐量\n 10-20 公噸 / 公頃，有機質肥料成分較高時，應降低施用用量 30 - 50 ％。\n適合的肥料: 39 號複肥 520 公斤 ( 含氮 62 公斤、磷酐 94 公斤、氧化鉀 62 公斤 ) \n肥料詳細網址:https://www.taifer.com.tw/ProductDetailC003210.aspx?Cond=25cc13e9-d36b-4061-aa93-8252e160bae6\n', ['絲瓜'], single_response=True)
+    response('\n( 一 ) 三要素推荐量 ( 公斤 / 公頃 ) \n氮素： 250-350 。磷酐： 100-150 。氧化鉀： 150-300 。\n( 二 ) 堆肥推荐量\n 10 公噸 / 公頃，有機質肥料成分較高時，應降低施用量 30-50 ％。\n 適合的肥料:43 號複肥 500 公斤 ( 含氮、磷酐及氧化鉀各 75 公斤，氧化鎂 20 公斤 )\n肥料詳細網址:https://www.taifer.com.tw/ProductDetailC003210.aspx?Cond=0d0cfdb0-928c-471e-995e-20f68dd4b8e2\n', ['苦瓜'], single_response=True)
+    response('\n( 一 ) 三要素推荐量 ( 公斤 / 公頃 ) \n氮素： 150-230 。磷酐： 60-90 。氧化鉀： 150-180 。 \n( 二 ) 堆肥推荐量\n 10-15 公噸 / 公頃，有機質肥料成分較高時，應降低施用量 30-50 ％。\n最適合的肥料:43 號複肥 400 公斤 ( 含氮、磷酐及氧化鉀各 60 公斤 )\n肥料詳細網址:https://www.taifer.com.tw/ProductDetailC003210.aspx?Cond=0d0cfdb0-928c-471e-995e-20f68dd4b8e2\n', ['芹菜'], single_response=True)
+    response('\n( 一 ) 三要素推荐量 ( 公斤 / 公頃 ) \n氮素： 230-240 。磷酐： 200-240 。氧化鉀： 230-240 。 \n( 二 ) 堆肥推荐量\n 10 公噸 / 公頃，有機質肥料成分較高時，應降低施用量 30-50 ％。\n最適合的肥料:39 號複肥 500 公斤 ( 含氮及氧化鉀各 60 公斤、磷酐 90 公斤 ) \n肥料詳細網址:https://www.taifer.com.tw/ProductDetailC003210.aspx?Cond=25cc13e9-d36b-4061-aa93-8252e160bae6\n', ['西瓜'], single_response=True)
+    response('\n( 一 ) 三要素推荐量 ( 公斤 / 公頃 ) \n氮素： 610 。磷酐： 800 。氧化鉀： 630 。 \n( 二 ) 堆肥推荐量\n 15-20 公噸 / 公頃，有機質肥料成分較高時，應降低施用量 30-50 ％ 。\n最適合的肥料: 39 號複肥 900 公斤 ( 含氮及氧化鉀各 108 公斤、磷酐 162 公斤 )  \n肥料詳細網址:https://www.taifer.com.tw/ProductDetailC003210.aspx?Cond=25cc13e9-d36b-4061-aa93-8252e160bae6\n', ['茄子'], single_response=True)
+    response('\n( 一 ) 三要素推荐量 ( 公斤 / 公頃 ) \n氮素： 150-200 。磷酐： 150-200 。氧化鉀： 150-200 。 \n( 二 ) 堆肥推荐量\n 10-20 公噸 / 公頃，有機質肥料成分較高時，應降低施用量 30-50 ％。\n最適合的肥料: 43 號複肥 800 公斤 ( 含氮、磷酐及氧化鉀各 120 公斤，氧化鎂 32 公斤 )  \n肥料詳細網址:https://www.taifer.com.tw/ProductDetailC003210.aspx?Cond=0d0cfdb0-928c-471e-995e-20f68dd4b8e2\n', ['草莓'], single_response=True)
+    # Longer responses
+    response(long.R_ADVICE, ['give', 'advice'], required_words=['advice'])
+    response(long.R_EATING, ['what', 'you', 'eat'], required_words=['you', 'eat'])
+
+    best_match = max(highest_prob_list, key=highest_prob_list.get)
+    # print(highest_prob_list)
+    # print(f'Best match = {best_match} | Score: {highest_prob_list[best_match]}')
+
+    return long.unknown() if highest_prob_list[best_match] < 1 else best_match
+
+
+# Used to get the response
+def get_response(user_input):
+    split_message = re.split(r'\s+|[,;?!.-]\s*', user_input.lower())
+    response = check_all_messages(split_message)
+    return response
+
+
+# Testing the response system
+while True:
+    print('農業ChatBot: ' + get_response(input('You: ')))
